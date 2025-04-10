@@ -47,9 +47,10 @@ async def show_schedule(message: Message):
     else:
         schedule_str = "Ваши события:\n"
         for time_str, events in schedule.items():
-            schedule_str += f"{time_str}:\n"
-            for event in events:
-                schedule_str += f" - {event['name']}\n"
+            if schedule[time_str].user_id == user_id:
+                schedule_str += f"{time_str}:\n"
+                for event in events:
+                    schedule_str += f" - {event['name']}\n"
         await message.answer(schedule_str)
 
 # Обработчик команды /add
