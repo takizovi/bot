@@ -4,7 +4,7 @@ import aiogram
 from aiogram import Bot, Dispatcher, types
 #from aiogram.types import Message
 #from aiogram.types import ParseMode
-#from aiogram import F
+from aiogram import F
 import aioschedule
 import time
 
