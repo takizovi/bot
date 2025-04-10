@@ -44,7 +44,11 @@ async def schedule_events():
 @dp.message(F.text == "/start")
 async def start(message: Message):
     user_id = message.from_user.id
-    await message.answer(f"Привет! Я — бот для работы с расписанием. Напиши /schedule для получения расписания.")
+    await message.answer(
+        "Привет! Я — бот для работы с расписанием.\n\n"
+        "Вот что я умею:",
+        reply_markup=main_menu()
+    )
 
 # callback кнопки
 @dp.callback_query(F.data == "show_schedule")
