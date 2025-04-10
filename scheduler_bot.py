@@ -47,7 +47,7 @@ async def show_schedule(message: Message):
     else:
         schedule_str = "Ваши события:\n"
         for time_str, events in schedule.items():
-            if schedule[time_str].user_id == user_id:
+            #if schedule[time_str].user_id == user_id:
                 schedule_str += f"{time_str}:\n"
                 for event in events:
                     schedule_str += f" - {event['name']}\n"
@@ -74,6 +74,34 @@ async def add(message: Message):
         await message.answer(f"Событие '{event_name}' добавлено на {time_str} от пользователя {user_id}.")
     except Exception as e:
         await message.answer(f"Ошибка при добавлении события: {str(e)}")
+
+
+
+
+
+@dp.message(F.text.startswith("/delete"))
+async def add(message: Message):
+    try:
+        # Формат: /add 12:00 Meeting
+        content = message.text.split()
+        time_str = content[1]
+        event_name = " ".join(content[2:])
+        user_id = message.from_user.id
+        
+        if time_str not in schedule:
+            schedule[time_str] = []
+        
+        schedule.remove(schedule[time_str])
+        })
+        
+        await message.answer(f"Событие '{event_name}' удалено с {time_str} от пользователя {user_id}.")
+    except Exception as e:
+        await message.answer(f"Ошибка при удалении события: {str(e)}")
+
+
+
+
+
 
 # Запуск бота и планировщика
 async def main():
