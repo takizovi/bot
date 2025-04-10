@@ -1,13 +1,14 @@
 import os
 import asyncio
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import Message
-from aiogram.types import ParseMode
-from aiogram import F
+import aiogram
+#from aiogram import Bot, Dispatcher, types
+#from aiogram.types import Message
+#from aiogram.types import ParseMode
+#from aiogram import F
 import aioschedule
 import time
 
-API_TOKEN = "8070156187:AAFqOPD5sM0PnKAQG3EnTOscV1h79sN0Rts"
+API_TOKEN = "7850539986:AAEzuGPJYhtw7fQvo5LhPZKzdqIKiU_as2Q"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
