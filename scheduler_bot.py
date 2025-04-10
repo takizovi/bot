@@ -53,11 +53,7 @@ async def start(message: Message):
 # callback кнопки
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
-
-
-
-
-    user_id = message.from_user.id
+    user_id = callback.from_user.id
     output = "📅 Ваши события:\n\n"
     found = False
     for time_str, events in schedule.items():
@@ -69,13 +65,7 @@ async def handle_show_schedule(callback: types.CallbackQuery):
                 output += f" • {name}\n"
     if not found:
         output = "У вас пока нет запланированных событий."
-    await message.answer(output)
-
-
-
-    
-    await show_schedule(callback.message)
-    await callback.answer()
+    await callback.answer(output)
 
 @dp.callback_query(F.data == "add_help")
 async def handle_add_help(callback: types.CallbackQuery):
