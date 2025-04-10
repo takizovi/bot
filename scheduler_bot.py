@@ -52,11 +52,11 @@ async def show_schedule(message: Message):
                 schedule_str += f" - {event['name']}\n"
         await message.answer(schedule_str)
 
-# Обработчик команды /add_event
-@dp.message(F.text.startswith("/add_event"))
-async def add_event(message: Message):
+# Обработчик команды /add
+@dp.message(F.text.startswith("/add"))
+async def add(message: Message):
     try:
-        # Формат: /add_event 12:00 Meeting
+        # Формат: /add 12:00 Meeting
         content = message.text.split()
         time_str = content[1]
         event_name = " ".join(content[2:])
@@ -70,7 +70,7 @@ async def add_event(message: Message):
             'user_id': user_id
         })
         
-        await message.answer(f"Событие '{event_name}' добавлено на {time_str}.")
+        await message.answer(f"Событие '{event_name}' добавлено на {time_str} от пользователя {user_id}.")
     except Exception as e:
         await message.answer(f"Ошибка при добавлении события: {str(e)}")
 
