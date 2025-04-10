@@ -2,7 +2,7 @@ import os
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
-from aiogram.enums import ParseMode
+from aiogram.types import ParseMode
 from aiogram import F
 import aioschedule
 import time
