@@ -53,6 +53,27 @@ async def start(message: Message):
 # callback кнопки
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
+
+
+
+
+    user_id = message.from_user.id
+    output = "📅 Ваши события:\n\n"
+    found = False
+    for time_str, events in schedule.items():
+        user_events = [e['name'] for e in events if e['user_id'] == user_id]
+        if user_events:
+            found = True
+            output += f"{time_str}:\n"
+            for name in user_events:
+                output += f" • {name}\n"
+    if not found:
+        output = "У вас пока нет запланированных событий."
+    await message.answer(output)
+
+
+
+    
     await show_schedule(callback.message)
     await callback.answer()
 
