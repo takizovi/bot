@@ -1,81 +1,82 @@
+import os
 import asyncio
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import ParseMode
-from aiogram.filters import Command
-import aioschedule as schedule
-from datetime import datetime, timedelta
+from aiogram.types import Message
+from aiogram.enums import ParseMode
+from aiogram import F
+import aioschedule
+import time
 
-API_TOKEN = '8070156187:AAFqOPD5sM0PnKAQG3EnTOscV1h79sN0Rts'
+API_TOKEN = "8070156187:AAFqOPD5sM0PnKAQG3EnTOscV1h79sN0Rts"
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
-# Хранилище событий (в реальности лучше использовать БД)
-user_schedules = {}
+# Расписание событий (пример)
+schedule = {}
 
-# Команда /start
-@dp.message(Command("start"))
-async def start(message: types.Message):
-    await message.answer("Привет! Я бот-расписание. Используй /add чтобы добавить событие и /list чтобы увидеть список.")
+# Функция, которая будет отправлять уведомления о событиях
+async def send_event_notification(event_name, user_id):
+    await bot.send_message(user_id, f"Напоминание: {event_name}!")
 
-# Команда /add
-@dp.message(Command("add"))
-async def add_event(message: types.Message):
-    try:
-        parts = message.text.split(maxsplit=2)
-        if len(parts) < 3:
-            raise ValueError
-
-        time_str, event = parts[1], parts[2]
-        event_time = datetime.strptime(time_str, "%H:%M")
-
-        user_id = message.from_user.id
-        now = datetime.now()
-        event_datetime = now.replace(hour=event_time.hour, minute=event_time.minute, second=0, microsecond=0)
-        if event_datetime < now:
-            event_datetime += timedelta(days=1)
-
-        if user_id not in user_schedules:
-            user_schedules[user_id] = []
-
-        user_schedules[user_id].append((event_datetime, event))
-        await message.answer(f"Событие добавлено: {event} в {event_datetime.strftime('%H:%M')}")
-
-    except ValueError:
-        await message.answer("Используй формат: /add HH:MM событие")
-
-# Команда /schedule
-@dp.message(Command("schedule"))
-async def list_events(message: types.Message):
-    user_id = message.from_user.id
-    events = user_schedules.get(user_id, [])
-    if not events:
-        await message.answer("У тебя пока нет событий.")
-    else:
-        msg = "\n".join([f"{dt.strftime('%H:%M')} - {ev}" for dt, ev in sorted(events)])
-        await message.answer("Твои события:\n" + msg)
-
-# Проверка и отправка уведомлений
-async def notify_events():
-    now = datetime.now()
-    for user_id, events in list(user_schedules.items()):
-        for event in events:
-            dt, text = event
-            if 0 <= (dt - now).total_seconds() <= 60:
-                await bot.send_message(user_id, f"🔔 Напоминание: {text} в {dt.strftime('%H:%M')}")
-        # Очищаем прошедшие
-        user_schedules[user_id] = [e for e in events if e[0] > now]
-
-# Фоновая задача
-async def scheduler():
-    schedule.every(1).minutes.do(notify_events)
+# Запланированное событие, которое будет запускать напоминания
+async def schedule_events():
     while True:
-        await schedule.run_pending()
-        await asyncio.sleep(1)
+        # Просматриваем расписание
+        for time_str, event_list in schedule.items():
+            current_time = time.strftime("%H:%M")
+            if current_time == time_str:
+                for event in event_list:
+                    await send_event_notification(event['name'], event['user_id'])
+                    event_list.remove(event)  # Убираем уже выполненное событие
+        await asyncio.sleep(60)  # Проверяем каждую минуту
 
-# Запуск
+# Обработчик команды /start
+@dp.message(F.text == "/start")
+async def start(message: Message):
+    user_id = message.from_user.id
+    await message.answer(f"Привет! Я — бот для работы с расписанием. Напиши /schedule для получения расписания.")
+
+# Обработчик команды /schedule
+@dp.message(F.text == "/schedule")
+async def show_schedule(message: Message):
+    user_id = message.from_user.id
+    if not schedule:
+        await message.answer("У вас нет запланированных событий.")
+    else:
+        schedule_str = "Ваши события:\n"
+        for time_str, events in schedule.items():
+            schedule_str += f"{time_str}:\n"
+            for event in events:
+                schedule_str += f" - {event['name']}\n"
+        await message.answer(schedule_str)
+
+# Обработчик команды /add_event
+@dp.message(F.text.startswith("/add_event"))
+async def add_event(message: Message):
+    try:
+        # Формат: /add_event 12:00 Meeting
+        content = message.text.split()
+        time_str = content[1]
+        event_name = " ".join(content[2:])
+        user_id = message.from_user.id
+        
+        if time_str not in schedule:
+            schedule[time_str] = []
+        
+        schedule[time_str].append({
+            'name': event_name,
+            'user_id': user_id
+        })
+        
+        await message.answer(f"Событие '{event_name}' добавлено на {time_str}.")
+    except Exception as e:
+        await message.answer(f"Ошибка при добавлении события: {str(e)}")
+
+# Запуск бота и планировщика
 async def main():
-    asyncio.create_task(scheduler())
+    # Запускаем планировщик в фоне
+    asyncio.create_task(schedule_events())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
