@@ -1,2 +1,2 @@
-worker:
-  command: python scheduler_bot.py
+worker: python scheduler_bot.py
+
