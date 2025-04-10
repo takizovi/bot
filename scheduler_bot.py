@@ -65,7 +65,8 @@ async def handle_show_schedule(callback: types.CallbackQuery):
                 output += f" • {name}\n"
     if not found:
         output = "У вас пока нет запланированных событий."
-    await callback.answer(output)
+    await callback.message.answer(output)
+    await callback.answer()
 
 @dp.callback_query(F.data == "add_help")
 async def handle_add_help(callback: types.CallbackQuery):
