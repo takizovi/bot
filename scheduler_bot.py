@@ -92,7 +92,6 @@ async def add(message: Message):
             schedule[time_str] = []
         
         schedule.remove(schedule[time_str])
-        })
         
         await message.answer(f"Событие '{event_name}' удалено с {time_str} от пользователя {user_id}.")
     except Exception as e:
