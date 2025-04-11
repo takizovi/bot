@@ -57,7 +57,7 @@ async def schedule_events():
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
                 schedule[current_time].remove(event)  # Удаляем после отправки
-        await asyncio.sleep(60)
+        await asyncio.sleep(1)
 
 # /start
 @dp.message(F.text == "/start")
