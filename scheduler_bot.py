@@ -56,7 +56,7 @@ async def start(message: Message):
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    output = "📅 Ваши события:\n\n"
+    output = f"📅 Ваши события{datetime.now().time()}:\n\n"
     found = False
     for time_str, events in schedule.items():
         user_events = [e['name'] for e in events if e['user_id'] == user_id]
