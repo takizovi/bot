@@ -7,6 +7,7 @@ from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram import F
 import aioschedule
 import time
+from datetime import datetime, timedelta
 
 API_TOKEN = "7850539986:AAEzuGPJYhtw7fQvo5LhPZKzdqIKiU_as2Q"
 
@@ -34,7 +35,8 @@ async def send_event_notification(event_name, user_id):
 # Фоновая задача для уведомлений
 async def schedule_events():
     while True:
-        current_time = time.strftime("%H:%M")
+        #current_time = time.strftime("%H:%M")
+        current_time = datetime.now(ZoneInfo("Europe/Moscow")).time()
         if current_time in schedule:
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
