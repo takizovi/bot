@@ -34,6 +34,13 @@ def schedule_menu():
     ])
     return kb
 
+def event_menu():
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📅 Посмотреть расписание", callback_data="show_schedule")],
+    ])
+    return kb
+
+
 # Функция для отправки уведомлений
 async def send_event_notification(event_name, user_id):
     try:
@@ -126,7 +133,7 @@ async def add_event(message: Message):
             schedule[time_str] = []
 
         schedule[time_str].append({'name': event_name, 'user_id': user_id})
-        await message.answer(f"✅ Событие «{event_name}» добавлено на {time_str}.")
+        await message.answer(f"✅ Событие «{event_name}» добавлено на {time_str}.",reply_markup=event_menu())
     except Exception:
         await message.answer("❌ Неверный формат. Используйте: `/add 12:00:00 Название события`", parse_mode="Markdown")
 
