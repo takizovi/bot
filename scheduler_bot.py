@@ -99,7 +99,7 @@ async def show_schedule(message: Message):
 
 
 @dp.message(F.text == "/ct")
-async def show_schedule(message: Message):
+async def show_time(message: Message):
     user_id = message.from_user.id
     output = f"Текуще время:{datetime.now().time()[:9]}\n\n"
     await message.answer(output)
