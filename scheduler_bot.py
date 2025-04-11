@@ -110,7 +110,7 @@ async def show_schedule(message: Message):
 @dp.message(F.text == "/ct")
 async def show_time(message: Message):
     user_id = message.from_user.id
-    output = f"Текуще время: {str(datetime.now(timezone('Europe/Moscow')).time())[:8]}\n\n"
+    output = f"Текуще время: {str(datetime.now(timezone('Europe/Moscow')).time())[:8]}.\n\n"
     await message.answer(output)
 
 # /add 12:00 Название
