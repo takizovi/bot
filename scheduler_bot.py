@@ -27,6 +27,7 @@ def main_menu():
 
 def schedule_menu():
     kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔄 Обновить расписание", callback_data="show_schedule")],
         [InlineKeyboardButton(text="➕ Добавить событие", callback_data="add_help")],
         [InlineKeyboardButton(text="❌ Удалить событие", callback_data="delete_help")],
     ])
@@ -43,7 +44,7 @@ async def send_event_notification(event_name, user_id):
 async def schedule_events():
     while True:
         #current_time = time.strftime("%H:%M")
-        current_time = str(datetime.now().time())[:9]
+        current_time = str(datetime.now().time())[:8]
         if current_time in schedule:
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
@@ -63,7 +64,7 @@ async def start(message: Message):
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    output = f"📅 Ваши события {str(datetime.now().time())[:9]}:\n\n"
+    output = f"📅 Ваши события {str(datetime.now().time())[:8]}:\n\n"
     found = False
     for time_str, events in schedule.items():
         user_events = [e['name'] for e in events if e['user_id'] == user_id]
@@ -79,12 +80,12 @@ async def handle_show_schedule(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "add_help")
 async def handle_add_help(callback: types.CallbackQuery):
-    await callback.message.answer("Чтобы добавить событие, напиши:\n\n`/add 12:00 Название события`", parse_mode="Markdown")
+    await callback.message.answer("Чтобы добавить событие, напиши:\n\n`/add 12:00:00 Название события`", parse_mode="Markdown")
     await callback.answer()
 
 @dp.callback_query(F.data == "delete_help")
 async def handle_delete_help(callback: types.CallbackQuery):
-    await callback.message.answer("Чтобы удалить событие, напиши:\n\n`/delete 12:00 Название события`", parse_mode="Markdown")
+    await callback.message.answer("Чтобы удалить событие, напиши:\n\n`/delete 12:00:00 Название события`", parse_mode="Markdown")
     await callback.answer()
 
 # /schedule
@@ -108,7 +109,7 @@ async def show_schedule(message: Message):
 @dp.message(F.text == "/ct")
 async def show_time(message: Message):
     user_id = message.from_user.id
-    output = f"Текуще время:{str(datetime.now().time())[:9]}\n\n"
+    output = f"Текуще время: {str(datetime.now().time())[:8]}\n\n"
     await message.answer(output)
 
 # /add 12:00 Название
@@ -126,7 +127,7 @@ async def add_event(message: Message):
         schedule[time_str].append({'name': event_name, 'user_id': user_id})
         await message.answer(f"✅ Событие «{event_name}» добавлено на {time_str}.")
     except Exception:
-        await message.answer("❌ Неверный формат. Используйте: `/add 12:00 Название события`", parse_mode="Markdown")
+        await message.answer("❌ Неверный формат. Используйте: `/add 12:00:00 Название события`", parse_mode="Markdown")
 
 # /delete 12:00 Название
 @dp.message(F.text.startswith("/delete"))
