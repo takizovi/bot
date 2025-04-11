@@ -36,7 +36,7 @@ async def send_event_notification(event_name, user_id):
 async def schedule_events():
     while True:
         #current_time = time.strftime("%H:%M")
-        current_time = datetime.now(ZoneInfo("Europe/Moscow")).time()
+        current_time = datetime.now().time()
         if current_time in schedule:
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
