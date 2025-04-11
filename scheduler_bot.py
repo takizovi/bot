@@ -8,6 +8,7 @@ from aiogram import F
 import aioschedule
 import time
 from datetime import datetime, timedelta
+from pytz import timezone
 
 API_TOKEN = "7850539986:AAEzuGPJYhtw7fQvo5LhPZKzdqIKiU_as2Q"
 
@@ -44,7 +45,7 @@ async def send_event_notification(event_name, user_id):
 async def schedule_events():
     while True:
         #current_time = time.strftime("%H:%M")
-        current_time = str(datetime.now().time())[:8]
+        current_time = str(datetime.now(timezone('Europe/Moscow')).time())[:8]
         if current_time in schedule:
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
@@ -64,7 +65,7 @@ async def start(message: Message):
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    output = f"📅 Ваши события {str(datetime.now().time())[:8]}:\n\n"
+    output = f"📅 Ваши события {str(datetime.now(timezone('Europe/Moscow')).time())[:8]}:\n\n"
     found = False
     for time_str, events in schedule.items():
         user_events = [e['name'] for e in events if e['user_id'] == user_id]
@@ -109,7 +110,7 @@ async def show_schedule(message: Message):
 @dp.message(F.text == "/ct")
 async def show_time(message: Message):
     user_id = message.from_user.id
-    output = f"Текуще время: {str(datetime.now().time())[:8]}\n\n"
+    output = f"Текуще время: {str(datetime.now(timezone('Europe/Moscow')).time())[:8]}\n\n"
     await message.answer(output)
 
 # /add 12:00 Название
