@@ -25,6 +25,13 @@ def main_menu():
     ])
     return kb
 
+def schedule_menu():
+    kb = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="➕ Добавить событие", callback_data="add_help")],
+        [InlineKeyboardButton(text="❌ Удалить событие", callback_data="delete_help")],
+    ])
+    return kb
+
 # Функция для отправки уведомлений
 async def send_event_notification(event_name, user_id):
     try:
@@ -56,7 +63,7 @@ async def start(message: Message):
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    output = f"📅 Ваши события:\n\n"
+    output = f"📅 Ваши события {datetime.now().time()[:9]}:\n\n"
     found = False
     for time_str, events in schedule.items():
         user_events = [e['name'] for e in events if e['user_id'] == user_id]
@@ -67,7 +74,7 @@ async def handle_show_schedule(callback: types.CallbackQuery):
                 output += f" • {name}\n"
     if not found:
         output = "У вас пока нет запланированных событий."
-    await callback.message.answer(output)
+    await callback.message.answer(output,reply_markup=schedule_menu())
     await callback.answer()
 
 @dp.callback_query(F.data == "add_help")
