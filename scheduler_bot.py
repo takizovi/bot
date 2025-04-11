@@ -36,7 +36,7 @@ async def send_event_notification(event_name, user_id):
 async def schedule_events():
     while True:
         #current_time = time.strftime("%H:%M")
-        current_time = datetime.now().time()
+        current_time = datetime.now().time()[:9]
         if current_time in schedule:
             for event in schedule[current_time][:]:
                 await send_event_notification(event['name'], event['user_id'])
@@ -56,7 +56,7 @@ async def start(message: Message):
 @dp.callback_query(F.data == "show_schedule")
 async def handle_show_schedule(callback: types.CallbackQuery):
     user_id = callback.from_user.id
-    output = f"📅 Ваши события{datetime.now().time()}:\n\n"
+    output = f"📅 Ваши события:\n\n"
     found = False
     for time_str, events in schedule.items():
         user_events = [e['name'] for e in events if e['user_id'] == user_id]
@@ -95,6 +95,13 @@ async def show_schedule(message: Message):
                 output += f" • {name}\n"
     if not found:
         output = "У вас пока нет запланированных событий."
+    await message.answer(output)
+
+
+@dp.message(F.text == "/ct")
+async def show_schedule(message: Message):
+    user_id = message.from_user.id
+    output = f"Текуще время:{datetime.now().time()[:9]}\n\n"
     await message.answer(output)
 
 # /add 12:00 Название
